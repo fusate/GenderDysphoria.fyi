@@ -1,3 +1,4 @@
+.vscode
 node_modules
 /dist
 /aws.json
@@ -22,3 +23,4 @@ node_modules
 /analytics/database.sqlite
 /analytics/RAW
 /public/gdb.zip
+/terraform/secret.auto.tfvars

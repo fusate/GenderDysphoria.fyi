@@ -1,11 +1,14 @@
 
+resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
+}
+
 # -----------------------------------------------------------------------------------------------------------
 # Cloudfront Configuration
 
 resource "aws_cloudfront_distribution" "site" {
   origin {
-    domain_name = aws_s3_bucket.src.bucket_regional_domain_name
-    origin_id   = "S3-Website-${aws_s3_bucket.src.website_endpoint}"
+    domain_name = aws_s3_bucket_website_configuration.src.website_endpoint
+    origin_id   = "S3-Website-${aws_s3_bucket_website_configuration.src.website_endpoint}"
 
     custom_origin_config {
       origin_protocol_policy = "http-only"
@@ -27,7 +30,7 @@ resource "aws_cloudfront_distribution" "site" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3-Website-${aws_s3_bucket.src.website_endpoint}"
+    target_origin_id = "S3-Website-${aws_s3_bucket_website_configuration.src.website_endpoint}"
 
     forwarded_values {
       query_string = false
@@ -112,10 +115,10 @@ resource "aws_lambda_function" "index_redirect" {
   filename         = "${path.module}/files/index_redirect.js.zip"
   function_name    = "${var.site}-index-redirect"
   handler          = "index_redirect.handler"
-  source_code_hash = data.archive_file.index_redirect.output_base64sha256
+  # source_code_hash = data.archive_file.index_redirect.output_base64sha256
   publish          = true
   role             = aws_iam_role.lambda_redirect.arn
-  runtime          = "nodejs10.x"
+  runtime          = "nodejs16.x"
 
   tags = {
     Name   = "${var.site}-index-redirect"
